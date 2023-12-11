@@ -5,9 +5,9 @@ import { CourseValidationSchema } from './course.validation';
 
 
 const router = express.Router()
-
+// ,validateRequest(CourseValidationSchema)
 router.post(
-    '/course',validateRequest(CourseValidationSchema), CourseControllers.createCourse
+    '/course', CourseControllers.createCourse
 );
 router.get('/courses',CourseControllers.getAllCourses);
 

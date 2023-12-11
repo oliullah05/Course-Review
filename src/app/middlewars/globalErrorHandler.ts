@@ -6,6 +6,7 @@ import { NextFunction, Request, Response } from 'express';
 import { ZodError } from 'zod';
 import { handleZodError } from '../errors/handleZodError';
 import { handleCastError } from '../errors/handleCastError';
+import { handleValidationError } from '../errors/handleValidationError';
 
 const globalErrorHandler = (
   err: any,
@@ -15,7 +16,7 @@ const globalErrorHandler = (
 ) => {
   let statusCode = err.statusCode || 500;
   let message = err.message || 'Something went wrong!';
-  let errorDetails;
+  let errorDetails:any;
   let errorMessage = ""
 
 
@@ -26,12 +27,33 @@ const globalErrorHandler = (
     const simplifiedError = handleZodError(err)
     statusCode = simplifiedError.statusCode;
     message = simplifiedError.message;
-    errorDetails = simplifiedError.errorDetails
-    errorDetails.map(details => {
+    errorDetails= simplifiedError.errorDetails
+    errorDetails.map((details: { message: string; })  => {
       errorMessage += `${details.message}. `
     })
-  
   }
+
+  //mongoose error capture 
+
+
+  else if (err?.name === "ValidationError") {
+  
+    const simplifiedError = handleValidationError(err)
+    statusCode = simplifiedError.statusCode;
+    message = simplifiedError.message;
+    errorDetails = simplifiedError.errorDetails
+    errorDetails.map((details: { message: string; })  => {
+      errorMessage += `${details.message}. `
+    })
+  }
+
+
+
+
+
+
+
+
 
 
 //capture cast error 
