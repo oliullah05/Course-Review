@@ -5,6 +5,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { ZodError } from 'zod';
 import { handleZodError } from '../errors/handleZodError';
+import { handleCastError } from '../errors/handleCastError';
 
 const globalErrorHandler = (
   err: any,
@@ -16,6 +17,8 @@ const globalErrorHandler = (
   let message = err.message || 'Something went wrong!';
   let errorDetails;
   let errorMessage = ""
+
+
   //zod error capture 
 
   if (err instanceof ZodError) {
@@ -23,12 +26,47 @@ const globalErrorHandler = (
     const simplifiedError = handleZodError(err)
     statusCode = simplifiedError.statusCode;
     message = simplifiedError.message;
-    errorDetails = simplifiedError.errorSources
+    errorDetails = simplifiedError.errorDetails
     errorDetails.map(details => {
       errorMessage += `${details.message}. `
     })
   
   }
+
+
+//capture cast error 
+
+else if (err?.name === "CastError") {
+  const inputString = err.message;
+
+  const regex = /"([0-9a-fA-F]+)"/;
+  const match = inputString.match(regex);
+  
+
+
+  if (match) {
+    const extractedValue = match[1];
+    errorMessage=`${extractedValue} is not a valid ID!`
+  }
+
+
+
+  const simplifiedError = handleCastError(err)
+  statusCode = simplifiedError.statusCode;
+  message = simplifiedError.message;
+  errorDetails = simplifiedError.errorDetails
+ 
+
+}
+
+
+
+
+
+
+
+
+
 
 
 
@@ -46,7 +84,8 @@ if(!errorMessage){
     message,
     errorMessage,
     errorDetails,
-    stack: err.stack
+    stack: err.stack,
+  
   });
 };
 
