@@ -1,3 +1,4 @@
+import Review from "../Review/review.model";
 import { TCourse } from "./course.interface";
 import Course from "./course.model";
 
@@ -16,6 +17,16 @@ const getSingleCourseFromDB = async (id: string) => {
   const result =
     await Course.findById(id);
   return result;
+};
+const getSingleCourseWithReviewsFromDB = async (id: string) => {
+  const courseData = await Course.findById(id)
+  const reviewData = await Review.findOne({courseId:id})
+ const result = {
+  course:courseData,
+  reviews:reviewData
+ }
+return result
+
 };
 
 const updateCourseIntoDB = async (
@@ -37,4 +48,5 @@ export const CourseServices = {
   getAllCoursesFromDB,
   getSingleCourseFromDB,
   updateCourseIntoDB,
+  getSingleCourseWithReviewsFromDB
 };
