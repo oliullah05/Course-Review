@@ -7,6 +7,7 @@ import { ZodError } from 'zod';
 import { handleZodError } from '../errors/handleZodError';
 import { handleCastError } from '../errors/handleCastError';
 import { handleValidationError } from '../errors/handleValidationError';
+import { handleDuplicateError } from '../errors/handleDuplicateError';
 
 const globalErrorHandler = (
   err: any,
@@ -23,7 +24,6 @@ const globalErrorHandler = (
   //zod error capture 
 
   if (err instanceof ZodError) {
-
     const simplifiedError = handleZodError(err)
     statusCode = simplifiedError.statusCode;
     message = simplifiedError.message;
@@ -32,6 +32,8 @@ const globalErrorHandler = (
       errorMessage += `${details.message}. `
     })
   }
+
+
 
   //mongoose error capture 
 
@@ -60,29 +62,32 @@ const globalErrorHandler = (
 
 else if (err?.name === "CastError") {
   const inputString = err.message;
-
   const regex = /"([0-9a-fA-F]+)"/;
   const match = inputString.match(regex);
-  
-
 
   if (match) {
     const extractedValue = match[1];
     errorMessage=`${extractedValue} is not a valid ID!`
   }
 
-
-
   const simplifiedError = handleCastError(err)
   statusCode = simplifiedError.statusCode;
   message = simplifiedError.message;
   errorDetails = simplifiedError.errorDetails
- 
 
 }
 
 
 
+  //mongoose duplicate error
+
+  else if (err?.code === 11000) {
+    const simplifiedError = handleDuplicateError(err)
+    statusCode = simplifiedError.statusCode;
+    message = simplifiedError.message;
+    errorDetails = simplifiedError.errorDetails;
+    errorMessage =errorDetails[0].message
+  }
 
 
 

@@ -23,6 +23,6 @@ export const handleValidationError = (err: mongoose.Error.ValidationError): TGen
 
 return{
     statusCode,
-    message:"Validation mongo Error",
+    message:"Validation Error",
     errorDetails
 }}
