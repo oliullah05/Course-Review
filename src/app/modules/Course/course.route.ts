@@ -4,19 +4,20 @@ import validateRequest from '../../middlewars/validateRequest';
 import { CourseValidationSchema } from './course.validation';
 
 
+
 const router = express.Router()
 // ,validateRequest(CourseValidationSchema)
 router.post(
-    '/course', CourseControllers.createCourse
+    '/course',validateRequest(CourseValidationSchema), CourseControllers.createCourse
 );
 router.get('/courses',CourseControllers.getAllCourses);
 
 router.get(
-    '/course/:id',CourseControllers.getSingleCourse
+    '/courses/:id',CourseControllers.getSingleCourse
 );
 
 router.patch(
-    '/course/:id',CourseControllers.updateCourse,
+    '/courses/:id',CourseControllers.updateCourse,
 );
 
 

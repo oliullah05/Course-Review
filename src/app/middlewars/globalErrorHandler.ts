@@ -8,6 +8,7 @@ import { handleZodError } from '../errors/handleZodError';
 import { handleCastError } from '../errors/handleCastError';
 import { handleValidationError } from '../errors/handleValidationError';
 import { handleDuplicateError } from '../errors/handleDuplicateError';
+import config from '../../config';
 
 const globalErrorHandler = (
   err: any,
@@ -91,7 +92,15 @@ else if (err?.name === "CastError") {
 
 
 
+// for Eroor 
 
+else if (err instanceof Error) {
+  message = err.message;
+  errorDetails = [{
+    path: "",
+    message: err.message
+  }]
+}
 
 
 
@@ -111,7 +120,7 @@ if(!errorMessage){
     message,
     errorMessage,
     errorDetails,
-    stack: err.stack,
+    stack: config.node_env === "development" ? err?.stack : null
   
   });
 };

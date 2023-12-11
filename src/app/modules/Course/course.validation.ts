@@ -24,6 +24,6 @@ export const CourseValidationSchema = z.object({
     
    
   })
-}).refine(data => data.details !== undefined, { message: 'Details are required' });
+})
 
 
