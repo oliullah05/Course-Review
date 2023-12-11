@@ -1,10 +1,13 @@
 import express from 'express';
 import { CourseControllers } from './course.controller';
+import validateRequest from '../../middlewars/validateRequest';
+import { CourseValidationSchema } from './course.validation';
+
 
 const router = express.Router()
 
 router.post(
-    '/course',CourseControllers.createCourse
+    '/course',validateRequest(CourseValidationSchema), CourseControllers.createCourse
 );
 router.get('/courses',CourseControllers.getAllCourses);
 

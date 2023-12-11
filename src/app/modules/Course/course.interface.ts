@@ -19,8 +19,7 @@ type TTag = {
     startDate: string; 
     endDate: string; 
     language: string; 
-    provider: string;
-    durationInWeeks: number; 
+    provider: string; 
     details: TCourseDetails; 
   };
 

@@ -1,4 +1,4 @@
-import mongoose, { Schema } from "mongoose";
+import { Schema, model } from "mongoose";
 import { TCourse } from "./course.interface";
 
 const courseSchema = new Schema<TCourse>({
@@ -54,10 +54,6 @@ const courseSchema = new Schema<TCourse>({
         type: String,
         required: [true, 'Provider is required']
     },
-    durationInWeeks: {
-        type: Number,
-        required: [true, 'Duration in weeks is required']
-    },
     details: {
         level: {
             type: String, required: [true, 'Course level is required']
@@ -66,8 +62,10 @@ const courseSchema = new Schema<TCourse>({
             type: String, required: [true, 'Course description is required']
         },
     },
+},{
+    timestamps:true
 });
 
-const Course = mongoose.model<TCourse>('Course', courseSchema);
+const Course = model<TCourse>('Course', courseSchema);
 
 export default Course;
