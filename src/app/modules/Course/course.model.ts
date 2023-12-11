@@ -1,5 +1,7 @@
 import { Schema, model } from "mongoose";
 import { TCourse } from "./course.interface";
+import AppError from "../../errors/appError";
+
 
 const courseSchema = new Schema<TCourse>({
     title: {
@@ -65,6 +67,24 @@ const courseSchema = new Schema<TCourse>({
 },{
     timestamps:true
 });
+
+
+courseSchema.pre('save', async function (next) {
+    const isCategoryExist = await Course.findOne({
+        title: this.title, 
+    });
+  
+    if (isCategoryExist) {
+      throw new AppError(
+        404,
+        'Title is already exist!',
+      );
+    }
+  
+    next();
+  });
+
+
 
 const Course = model<TCourse>('Course', courseSchema);
 
