@@ -8,7 +8,7 @@ import { ReviewValidationSchema } from './review.validation';
 
 
 const router = express.Router();
-// router.get('/reviews', ReviewControllers.createReview);
+router.get('/reviews', ReviewControllers.getAllReview);
 router.post(
   '/reviews',
   validateRequest(ReviewValidationSchema),
