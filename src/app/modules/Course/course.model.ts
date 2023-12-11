@@ -1,6 +1,7 @@
-import { Schema, model } from "mongoose";
+import { Schema, Types, model } from "mongoose";
 import { TCourse } from "./course.interface";
 import AppError from "../../errors/appError";
+import Review from "../Review/review.model";
 
 
 const courseSchema = new Schema<TCourse>({
@@ -65,7 +66,14 @@ const courseSchema = new Schema<TCourse>({
         },
     },
 },{
-    timestamps:true
+    timestamps:true,
+    virtuals:true,
+    toJSON:{
+        virtuals:true
+    },
+    toObject:{
+        virtuals:true
+    }
 });
 
 
@@ -83,6 +91,34 @@ courseSchema.pre('save', async function (next) {
   
     next();
   });
+
+  courseSchema.virtual('averageRating').get(async function () {
+    return 8
+  });;
+
+//   courseSchema.virtual('averageRating2').get(async function () {
+
+//     return 88888
+//   });
+
+
+
+
+courseSchema.virtual('fullName').get(async function () {
+    let reviewCount = 0;
+    let totalRating = 0;
+    const courseId:Types.ObjectId = this?._id;
+    const findReviews = await Review.find({courseId:courseId})
+    findReviews.forEach(review=>{
+        reviewCount++;
+        totalRating=totalRating+review.rating
+    })
+    const reviewAvarage = Number(totalRating)/Number(reviewCount)
+    console.log(reviewCount,totalRating,reviewAvarage);
+    
+    return reviewAvarage
+  });
+
 
 
 
