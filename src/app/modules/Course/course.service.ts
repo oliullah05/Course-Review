@@ -57,12 +57,31 @@ const updateCourseIntoDB = async (
   id: string,
   payload: Partial<TCourse>,
 ) => {
+ 
+const {details,...remainingData } =payload;
+
+
+const modifiedUpdatedData: Record<string, unknown> = {
+  ...remainingData,
+};
+
+
+if (details && Object.keys(details).length) {
+  for (const [key, value] of Object.entries(details)) {
+    modifiedUpdatedData[`details.${key}`] = value;
+  }
+}
+
+
+
+console.log(modifiedUpdatedData);
+
   const result = await Course.findByIdAndUpdate(
     { _id: id },
-    payload,
+    modifiedUpdatedData,
     {
       new: true,
-      runValidatorsL:true
+      runValidatorsL: true
     },
   );
   return result;
