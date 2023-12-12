@@ -84,7 +84,7 @@ const updateCourse = catchAsync(async (req, res) => {
     );
 
   sendResponse(res, {
-    statusCode: 201,
+    statusCode: 200,
     success: true,
     message: 'Course is updated succesfully',
     data: result,

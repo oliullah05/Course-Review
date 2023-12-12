@@ -1,7 +1,7 @@
-import { Schema, Types, model } from "mongoose";
+import { Schema, model } from "mongoose";
 import { TCourse } from "./course.interface";
 import AppError from "../../errors/appError";
-import Review from "../Review/review.model";
+
 
 
 const courseSchema = new Schema<TCourse>({
@@ -108,7 +108,7 @@ courseSchema.pre('save', async function (next) {
 
 
 
-  courseSchema.virtual('durationInWeeks').get(function (this: Course) {
+  courseSchema.virtual('durationInWeeks').get(function () {
     const startDate = new Date(this.startDate);
     const endDate = new Date(this.endDate);
     

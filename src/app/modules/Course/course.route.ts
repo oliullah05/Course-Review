@@ -29,7 +29,7 @@ router.get(
 
 
 
-router.patch(
+router.put(
     '/courses/:id',CourseControllers.updateCourse,
 );
 
