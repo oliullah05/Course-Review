@@ -44,6 +44,21 @@ const getSingleCourse = catchAsync(async (req, res) => {
 });
 
 
+
+
+const getBestCourseBasedOnAvarageReview = catchAsync(async (req, res) => {
+  const result = await CourseServices.getBestCourseBasedOnAvarageReviewsFromDB();
+
+  sendResponse(res, {
+    statusCode: 200,
+    success: true,
+    message: 'Best Course with Avarage Review is retrieved succesfully',
+    data: result,
+  });
+});
+
+
+
 const getSingleCourseWithReview = catchAsync(async (req, res) => {
   const { id } = req.params;
   const result =
@@ -81,5 +96,6 @@ export const CourseControllers = {
   getAllCourses,
   getSingleCourse,
 updateCourse,
-getSingleCourseWithReview
+getSingleCourseWithReview,
+getBestCourseBasedOnAvarageReview
 };

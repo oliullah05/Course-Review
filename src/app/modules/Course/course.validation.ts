@@ -18,7 +18,9 @@ export const CourseValidationSchema = z.object({
   endDate: z.string({ required_error: 'End date is required' }),
   language: z.string({ required_error: 'Language is required' }),
   provider: z.string({ required_error: 'Provider is required' }),
-
+  reviewCount:z.number().default(0),
+     averageRating:z.number().default(0),
+     ratingSum:z.number().default(0),
   details: z.object({
     level: z.string({ required_error: 'level is required' }),
     description: z.string({required_error:"description is required"})

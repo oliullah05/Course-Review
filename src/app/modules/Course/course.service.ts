@@ -3,9 +3,12 @@ import { TCourse } from "./course.interface";
 import Course from "./course.model";
 
 
-const createCourseIntoDB = async (payload: TCourse) => {
+const createCourseIntoDB = async (payload: TCourse)=> {
   const result = await Course.create(payload);
-  return result;
+ if(result){
+  const deleteaverageRatingreviewCount = await Course.findById(result._id,{averageRating:0,reviewCount:0,ratingSum:0})
+  return deleteaverageRatingreviewCount;
+ }
 };
 
 const getAllCoursesFromDB = async () => {
@@ -20,7 +23,7 @@ const getSingleCourseFromDB = async (id: string) => {
 };
 const getSingleCourseWithReviewsFromDB = async (id: string) => {
   const courseData = await Course.findById(id)
-  const reviewData = await Review.findOne({courseId:id})
+  const reviewData = await Review.find({courseId:id})
  const result = {
   course:courseData,
   reviews:reviewData
@@ -28,6 +31,26 @@ const getSingleCourseWithReviewsFromDB = async (id: string) => {
 return result
 
 };
+const getBestCourseBasedOnAvarageReviewsFromDB = async () => {
+ let averageRating;
+  let reviewCount;
+  const result = await Course.findOne().sort({averageRating:-1})
+  averageRating = result?.averageRating
+  reviewCount= result?.reviewCount
+
+  const removeAllRattingProperty = await Course.findOne().sort({averageRating:-1}).select('-reviewCount -averageRating -ratingSum').exec()
+ return {
+  "course":removeAllRattingProperty,
+   "averageRating": averageRating,
+   "reviewCount": reviewCount
+ }
+
+};
+
+
+
+
+
 
 const updateCourseIntoDB = async (
   id: string,
@@ -48,5 +71,6 @@ export const CourseServices = {
   getAllCoursesFromDB,
   getSingleCourseFromDB,
   updateCourseIntoDB,
-  getSingleCourseWithReviewsFromDB
+  getSingleCourseWithReviewsFromDB,
+  getBestCourseBasedOnAvarageReviewsFromDB
 };

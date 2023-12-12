@@ -4,7 +4,8 @@ import { ReviewServices } from "./review.service";
 
 const createReview = catchAsync(async (req, res) => {
     const result =  await ReviewServices.createReviewIntoDB(req.body);
-  
+
+
     sendResponse(res, {
       statusCode: 201,
       success: true,
@@ -12,6 +13,9 @@ const createReview = catchAsync(async (req, res) => {
       data: result,
     });
   });
+
+
+
 const getAllReview = catchAsync(async (req, res) => {
     const result =  await ReviewServices.getAllReviewFromDB();
   

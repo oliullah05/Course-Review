@@ -21,6 +21,9 @@ type TTag = {
     language: string; 
     provider: string; 
     details: TCourseDetails; 
+    averageRating?:number;
+    reviewCount?:number;
+    ratingSum?:number,
   };
 
 

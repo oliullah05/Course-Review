@@ -15,9 +15,19 @@ router.get('/courses',CourseControllers.getAllCourses);
 router.get(
     '/courses/:id',CourseControllers.getSingleCourse
 );
+
+
+
 router.get(
     '/courses/:id/reviews',CourseControllers.getSingleCourseWithReview
 );
+
+
+router.get(
+    '/course/best',CourseControllers.getBestCourseBasedOnAvarageReview
+);
+
+
 
 router.patch(
     '/courses/:id',CourseControllers.updateCourse,

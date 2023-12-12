@@ -57,6 +57,18 @@ const courseSchema = new Schema<TCourse>({
         type: String,
         required: [true, 'Provider is required']
     },
+    reviewCount:{
+        type:Number,
+        default:0
+    },
+    averageRating:{
+        type:Number,
+        default:0
+    },
+    ratingSum:{
+        type:Number,
+        default:0
+    },
     details: {
         level: {
             type: String, required: [true, 'Course level is required']
@@ -67,7 +79,6 @@ const courseSchema = new Schema<TCourse>({
     },
 },{
     timestamps:true,
-    virtuals:true,
     toJSON:{
         virtuals:true
     },
@@ -92,35 +103,27 @@ courseSchema.pre('save', async function (next) {
     next();
   });
 
-  courseSchema.virtual('averageRating').get(async function () {
-    return 8
-  });;
-
-//   courseSchema.virtual('averageRating2').get(async function () {
-
-//     return 88888
-//   });
 
 
 
 
-courseSchema.virtual('fullName').get(async function () {
-    let reviewCount = 0;
-    let totalRating = 0;
-    const courseId:Types.ObjectId = this?._id;
-    const findReviews = await Review.find({courseId:courseId})
-    findReviews.forEach(review=>{
-        reviewCount++;
-        totalRating=totalRating+review.rating
-    })
-    const reviewAvarage = Number(totalRating)/Number(reviewCount)
-    console.log(reviewCount,totalRating,reviewAvarage);
+
+  courseSchema.virtual('durationInWeeks').get(function (this: Course) {
+    const startDate = new Date(this.startDate);
+    const endDate = new Date(this.endDate);
     
-    return reviewAvarage
-  });
+ 
+    const differenceBetweenInMiliSecound = endDate - startDate;
+    
+    // Convert milliseconds to weeks
+    const convertMilliSecondsInWeek = 1000 * 60 * 60 * 24 * 7;
 
+    const totaldurationInWeeks = Math.ceil(differenceBetweenInMiliSecound / convertMilliSecondsInWeek);
+    
+    return totaldurationInWeeks
+});
 
-
+ 
 
 const Course = model<TCourse>('Course', courseSchema);
 
