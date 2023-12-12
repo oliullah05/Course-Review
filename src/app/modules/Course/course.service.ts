@@ -1,4 +1,6 @@
 /* eslint-disable prefer-const */
+
+
 import AppError from "../../errors/appError";
 import Review from "../Review/review.model";
 import { TCourse } from "./course.interface";
@@ -13,10 +15,36 @@ const createCourseIntoDB = async (payload: TCourse) => {
   }
 };
 
-const getAllCoursesFromDB = async () => {
-  const result = await Course.find();
-  return result;
+const getAllCoursesFromDB = async (query:Record<string,unknown>) => {
+  let result =  Course.find();
+  if(!query){
+     result = Course.find();
+  }
+  const {page=1,limit=10}= query;
+
+
+if(limit){
+  result = result.limit(Number(limit))
+}
+if(page){
+  const queryPage = Number(page) || 1;
+  const queryLimit = Number(limit) || 10;
+  const skip = Number((queryPage - 1) * queryLimit);
+  result =  result.skip(skip).limit(queryLimit)
+}
+
+
+  return await result;
 };
+
+
+
+
+
+
+
+
+
 
 const getSingleCourseFromDB = async (id: string) => {
   const result =
@@ -73,16 +101,19 @@ if (details && Object.keys(details).length) {
   }
 }
 
-
   const result = await Course.findByIdAndUpdate(
     { _id: id },
     modifiedUpdatedData,
     {
       new: true,
-      runValidatorsL: true
+      runValidators: true
     },
   );
 
+
+if(!result){
+  throw new AppError(404,"update fail")
+}
 
 
 // .............................................Course..
@@ -103,13 +134,9 @@ if (tags && tags.length > 0) {
   
   )
 
-
-
   if(!deleteTags){
       throw new AppError(404,"fail to update course")
   }
-
-
 
   const filterUndeltedTags = tags?.filter(
       (el) => el.name && !el.isDeleted
@@ -121,19 +148,23 @@ if (tags && tags.length > 0) {
   },
       {
           new: true,
-          runValidators: true,
+          runValidators: true
       })
 
       if(!addingTags){
           throw new AppError(404,"fail to update course")
       }
+
       return addingTags;
 }
 
 
 
-  
-  return result;
+return result;
+
+
+
+
 };
 
 
