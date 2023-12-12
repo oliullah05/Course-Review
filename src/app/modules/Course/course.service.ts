@@ -1,4 +1,5 @@
 /* eslint-disable prefer-const */
+import AppError from "../../errors/appError";
 import Review from "../Review/review.model";
 import { TCourse } from "./course.interface";
 import Course from "./course.model";
@@ -58,7 +59,7 @@ const updateCourseIntoDB = async (
   payload: Partial<TCourse>,
 ) => {
  
-const {details,...remainingData } =payload;
+const {tags,details,...remainingData } =payload;
 
 
 const modifiedUpdatedData: Record<string, unknown> = {
@@ -73,9 +74,6 @@ if (details && Object.keys(details).length) {
 }
 
 
-
-console.log(modifiedUpdatedData);
-
   const result = await Course.findByIdAndUpdate(
     { _id: id },
     modifiedUpdatedData,
@@ -84,6 +82,57 @@ console.log(modifiedUpdatedData);
       runValidatorsL: true
     },
   );
+
+
+
+// .............................................Course..
+
+
+if (tags && tags.length > 0) {
+  //filter out the deletd files
+  const filterDeletedTags = tags.filter(elem => elem.name && elem.isDeleted).map(el => el.name)
+  const deleteTags = await Course.findByIdAndUpdate(id, {
+      $pull: {
+        tags: { name: { $in: filterDeletedTags } },
+      },
+  },
+      {
+          new: true,
+          runValidators: true,
+      }
+  
+  )
+
+
+
+  if(!deleteTags){
+      throw new AppError(404,"fail to update course")
+  }
+
+
+
+  const filterUndeltedTags = tags?.filter(
+      (el) => el.name && !el.isDeleted
+  );
+
+
+  const addingTags = await Course.findByIdAndUpdate(id, {
+      $addToSet: { tags: { $each: filterUndeltedTags } }
+  },
+      {
+          new: true,
+          runValidators: true,
+      })
+
+      if(!addingTags){
+          throw new AppError(404,"fail to update course")
+      }
+      return addingTags;
+}
+
+
+
+  
   return result;
 };
 
