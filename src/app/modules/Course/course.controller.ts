@@ -2,6 +2,7 @@ import { query } from "express";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import { CourseServices } from "./course.service";
+import Course from "./course.model";
 
 
 const createCourse = catchAsync(async (req, res) => {
@@ -18,15 +19,25 @@ const createCourse = catchAsync(async (req, res) => {
 
 const getAllCourses = catchAsync(async (req, res) => {
   const result = await CourseServices.getAllCoursesFromDB(req.query);
-const metaData = CourseServices.metaData[1]
-   console.log(metaData,88);
+
+  //metaData recive from service
+const metaData = CourseServices.metaData
+const showMetaData = metaData[metaData.length-1]
+
+
+//get total in database 
+const totalDataInDatabase = await (await Course.find()).length
+
+
+
+
   sendResponse(res, {
     statusCode: 200,
     success: true,
     meta: {
-      page:metaData.page,
-      limit: metaData.limit,
-      total: result.length
+      page:showMetaData?.page,
+      limit: showMetaData?.limit,
+      total: totalDataInDatabase
      },
     message: 'Courses are retrieved successfully',
     data: result,
