@@ -79,6 +79,7 @@ const courseSchema = new Schema<TCourse>({
     },
 },{
     timestamps:true,
+    virtuals:true,
     toJSON:{
         virtuals:true
     },
@@ -102,8 +103,6 @@ courseSchema.pre('save', async function (next) {
   
     next();
   });
-
-
 
 
 

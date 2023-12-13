@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 import { TReview } from "./review.interface";
 
-const TReviewSchema = new Schema<TReview,TReviewModel>({
+const TReviewSchema = new Schema<TReview>({
     courseId: { type: Schema.Types.ObjectId, required: [true,"courseId is required"] },
     rating: { type: Number, required: [true,"ratting is required"] },
     review: { type: String, required: [true,"review is required"] },
@@ -13,6 +13,6 @@ const TReviewSchema = new Schema<TReview,TReviewModel>({
 
 
 
-const Review = model<TReview,TReviewModel>("Review", TReviewSchema);
+const Review = model<TReview>("Review", TReviewSchema);
 
 export default Review;

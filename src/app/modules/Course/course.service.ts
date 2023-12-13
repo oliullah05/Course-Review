@@ -10,31 +10,159 @@ import Course from "./course.model";
 const createCourseIntoDB = async (payload: TCourse) => {
   const result = await Course.create(payload);
   if (result) {
-    const deleteaverageRatingreviewCount = await Course.findById(result._id, { averageRating: 0, reviewCount: 0, ratingSum: 0 })
-    return deleteaverageRatingreviewCount;
+    const hideAverageRatingreviewCount = await Course.findById(result._id, { averageRating: 0, reviewCount: 0, ratingSum: 0})
+    return hideAverageRatingreviewCount;
   }
 };
 
 const getAllCoursesFromDB = async (query:Record<string,unknown>) => {
-  let result =  Course.find();
-  if(!query){
-     result = Course.find();
-  }
-  const {page=1,limit=10}= query;
+  
+const  result =await Course.find();
 
 
-if(limit){
-  result = result.limit(Number(limit))
+//   if(!query){
+//      result = Course.find();
+//   }
+//   const {page=1,limit=10,sortBy,sortOrder}= query;
+
+
+//  if(limit){
+//   result = result.limit(Number(limit))
+// }
+// if(page){
+//   const queryPage = Number(page) || 1;
+//   const queryLimit = Number(limit) || 10;
+//   const skip = Number((queryPage - 1) * queryLimit);
+//   result =  result.skip(skip).limit(queryLimit)
+// }
+
+// let sortOrder = -1;
+
+// if(sortBy){
+//   result = result.sort({title:-1})
+// }
+
+
+
+
+
+
+
+let page = Number( query.page) || 1;
+let limit = Number( query.limit) || 10;
+
+// Calculate the skip value for pagination
+let skip = (page - 1) * limit;
+
+// Build the aggregation pipeline based on the query parameters
+let pipeline = [];
+
+// Sorting
+if ( query.sortBy) {
+
+  let sortOrder =  query.sortOrder == 'desc' ? -1 : 1;
+  pipeline.push({ $sort: { [ query.sortBy]: sortOrder } });
 }
-if(page){
-  const queryPage = Number(page) || 1;
-  const queryLimit = Number(limit) || 10;
-  const skip = Number((queryPage - 1) * queryLimit);
-  result =  result.skip(skip).limit(queryLimit)
+
+// Filtering
+let matchQuery = {};
+
+if ( query.minPrice ||  query.maxPrice) {
+  // matchQuery.price = {};
+  if ( query.minPrice) matchQuery.price.$gte = Number( query.minPrice);
+  if ( query.maxPrice) matchQuery.price.$lte = Number( query.maxPrice);
+}
+
+if (query.startDate || query.endDate) {
+  // matchQuery.startDate = {};
+  if (query.startDate) matchQuery.startDate = query.startDate;
+  if (query.endDate) matchQuery.endDate = query.endDate;
 }
 
 
-  return await result;
+
+if (query.language ) {
+  // matchQuery.language = {};
+  if (query.language) matchQuery.language = query.language;
+}
+if (query.provider ) {
+  // matchQuery.provider = {};
+  if (query.provider) matchQuery.provider = query.provider;
+}
+// if (query.durationInWeeks) {
+//   // matchQuery.durationInWeeks = {};
+//   if (query.durationInWeeks) matchQuery.durationInWeeks = query.durationInWeeks;
+// }
+
+
+
+
+
+// if ( query.tags) {
+//   matchQuery.tags =  query.tags;
+// }
+
+// Add other filtering conditions based on your schema fields
+
+if (Object.keys(matchQuery).length > 0) {
+  pipeline.push({ $match: matchQuery });
+}
+// console.log(matchQuery);
+// Pagination
+
+pipeline.push({ $addFields: { durationInWeeks: '$durationInWeeks' } });
+
+
+
+
+
+
+// pipeline.push({
+//   $match: {
+//     $expr: { $eq: ["$price", 59.99] }
+//   }
+// });
+
+// pipeline.push({
+//   $addFields: {
+//     show: true
+//   }
+// });
+
+
+
+
+
+pipeline.push({ $skip: skip }, { $limit: limit });
+
+// Execute the aggregation pipeline
+const rawResults = await Course.aggregate(pipeline);
+
+// Map the results and include virtuals
+const courses = rawResults.map(result => {
+  const course = new Course(result);
+  return course.toObject({ virtuals: true });
+});
+
+
+
+
+
+
+
+
+if(query.durationInWeeks){
+  console.log(query.durationInWeeks,55);
+const durationInWeeksFilter =  courses.filter(lm=>lm?.durationInWeeks===Number(query.durationInWeeks))
+return durationInWeeksFilter;
+}
+
+else{
+  return courses
+}
+
+
+  
 };
 
 
