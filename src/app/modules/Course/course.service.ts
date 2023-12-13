@@ -98,9 +98,27 @@ if (query.provider ) {
 
 
 
-// if ( query.tags) {
-//   matchQuery.tags =  query.tags;
-// }
+if ( query.tags) {
+  pipeline.push({
+    $match: {
+        "tags.name": query.tags
+    }
+})
+}
+if ( query.level) {
+  pipeline.push({
+    $match: {
+        "details.level": query.level
+    }
+})
+}
+
+
+
+
+
+
+
 
 // Add other filtering conditions based on your schema fields
 
