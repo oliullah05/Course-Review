@@ -31,7 +31,7 @@ const courseSchema = new Schema<TCourse>({
         {
             name: {
                 type: String,
-                required: [true, 'Tag name is required']
+                required: [true, 'Tag name is required'],unique:true
             },
             isDeleted: {
                 type: Boolean,
@@ -78,7 +78,6 @@ const courseSchema = new Schema<TCourse>({
         },
     },
 },{
-    timestamps:true,
     toJSON:{
         virtuals:true
     },

@@ -21,13 +21,12 @@ const getAllCourses = catchAsync(async (req, res) => {
   const result = await CourseServices.getAllCoursesFromDB(req.query);
 
   //metaData recive from service
-const metaData = CourseServices.metaData
-const showMetaData = metaData[metaData.length-1]
+  const metaData = CourseServices.metaData
+  const showMetaData = metaData[metaData.length - 1]
 
 
-//get total in database 
-const totalDataInDatabase = await (await Course.find()).length
-
+  //get total in database 
+  const totalDataInDatabase = await (await Course.find()).length
 
 
 
@@ -35,10 +34,10 @@ const totalDataInDatabase = await (await Course.find()).length
     statusCode: 200,
     success: true,
     meta: {
-      page:showMetaData?.page,
+      page: showMetaData?.page,
       limit: showMetaData?.limit,
       total: totalDataInDatabase
-     },
+    },
     message: 'Courses are retrieved successfully',
     data: result,
   });
@@ -81,6 +80,10 @@ const getSingleCourseWithReview = catchAsync(async (req, res) => {
   const result =
     await CourseServices.getSingleCourseWithReviewsFromDB(id);
 
+
+  const copyData = { ...result }
+  console.log(copyData);
+
   sendResponse(res, {
     statusCode: 200,
     success: true,
@@ -100,11 +103,14 @@ const updateCourse = catchAsync(async (req, res) => {
       req.body,
     );
 
+  const removeData = await Course.findById(result._id, { reviewCount: 0, averageRating: 0, __v: 0, updatedAt: 0, createdAt: 0, ratingSum: 0 })
+
+
   sendResponse(res, {
     statusCode: 200,
     success: true,
     message: 'Course is updated succesfully',
-    data: result,
+    data: removeData,
   });
 });
 

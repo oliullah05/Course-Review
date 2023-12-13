@@ -8,10 +8,13 @@ import Course from "./course.model";
 
 let metaData:[unknown]= [{}];
 const createCourseIntoDB = async (payload: TCourse) => {
+  if(payload.durationInWeeks){
+    throw new AppError(404,"durationInWeeks can't be added")
+  }
   const result = await Course.create(payload);
   if (result) {
-    const hideAverageRatingreviewCount = await Course.findById(result._id, { averageRating: 0, reviewCount: 0, ratingSum: 0,createdAt:0,__v:0,updatedAt:0,id:0})
-    return hideAverageRatingreviewCount;
+    const hideProperty = await Course.findById(result._id, { averageRating: 0, reviewCount: 0, ratingSum: 0,createdAt:0,__v:0,updatedAt:0,id:0})
+    return hideProperty;
   }
 };
 
@@ -53,7 +56,7 @@ let limit = Number( query.limit) || 10;
 
 let skip = (page - 1) * limit;
 
-
+console.log(skip);
 let pipeline = [];
 
 // Sorting
@@ -66,17 +69,28 @@ if ( query.sortBy) {
 // Filtering
 let matchQuery = {};
 
-if ( query.minPrice ||  query.maxPrice) {
-
+if ( query.minPrice ) {
+  matchQuery.price = {};
   if ( query.minPrice) matchQuery.price.$gte = Number( query.minPrice);
+ 
+}
+
+if(query.maxPrice){
   if ( query.maxPrice) matchQuery.price.$lte = Number( query.maxPrice);
 }
 
-if (query.startDate || query.endDate) {
+
+
+
+if (query.startDate ) {
 
   if (query.startDate) matchQuery.startDate = query.startDate;
+
+}
+if( query.endDate){
   if (query.endDate) matchQuery.endDate = query.endDate;
 }
+
 
 
 
@@ -125,7 +139,17 @@ pipeline.push({ $addFields: { durationInWeeks: '$durationInWeeks' } });
 
 pipeline.push({ $skip: skip }, { $limit: limit });
 
+// $project to exclude fields
+// pipeline.push({
+//   $project: {
+//     __v: 0,
+//     ratingSum: 0,
+//     averageRating: 0,
+//     reviewCount: 0,
+//   },
+// });
 
+console.log(999,pipeline,9999);
 const result = await Course.aggregate(pipeline);
 
 
@@ -140,6 +164,8 @@ let courses = result.map(result => {
 if(query.durationInWeeks){
   courses =  courses.filter(lm=>lm?.durationInWeeks===Number(query.durationInWeeks))
 }
+
+
 
 
 metaData.push({
@@ -169,15 +195,23 @@ const getSingleCourseFromDB = async (id: string) => {
   return result;
 };
 const getSingleCourseWithReviewsFromDB = async (id: string) => {
-  const courseData = await Course.findById(id)
-  const reviewData = await Review.find({ courseId: id })
+  const courseData = await Course.findById(id,{ reviewCount: 0, averageRating: 0, __v: 0, updatedAt: 0, createdAt: 0, ratingSum: 0 })
+  const reviewData = await Review.find({ courseId: id },{_id:0,id:0,__v:0})
   const result = {
     course: courseData,
     reviews: reviewData
   }
+  if(!courseData){
+    throw new AppError(404,"Data get fail . Id not match")
+  }
   return result
 
 };
+
+
+
+
+
 const getBestCourseBasedOnAvarageReviewsFromDB = async () => {
   let averageRating;
   let reviewCount;
@@ -185,7 +219,7 @@ const getBestCourseBasedOnAvarageReviewsFromDB = async () => {
   averageRating = result?.averageRating
   reviewCount = result?.reviewCount
 
-  const removeAllRattingProperty = await Course.findOne().sort({ averageRating: -1 }).select('-reviewCount -averageRating -ratingSum').exec()
+  const removeAllRattingProperty = await Course.findOne().sort({ averageRating: -1 }).select('-reviewCount -averageRating -ratingSum -__v -updatedAt -createdAt').exec()
   return {
     "course": removeAllRattingProperty,
     "averageRating": averageRating,
@@ -223,13 +257,13 @@ if (details && Object.keys(details).length) {
     modifiedUpdatedData,
     {
       new: true,
-      runValidators: true
+      runValidators: true,
     },
   );
 
 
 if(!result){
-  throw new AppError(404,"update fail")
+  throw new AppError(404,"update fail . Id not match")
 }
 
 
@@ -271,9 +305,9 @@ if (tags && tags.length > 0) {
       if(!addingTags){
           throw new AppError(404,"fail to update course")
       }
-
       return addingTags;
 }
+
 
 
 

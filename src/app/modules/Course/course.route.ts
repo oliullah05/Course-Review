@@ -1,7 +1,7 @@
 import express from 'express';
 import { CourseControllers } from './course.controller';
 import validateRequest from '../../middlewars/validateRequest';
-import { CourseValidationSchema } from './course.validation';
+import { CourseValidationSchema, updateCourseValidationSchema } from './course.validation';
 
 
 
@@ -30,7 +30,7 @@ router.get(
 
 
 router.put(
-    '/courses/:id',CourseControllers.updateCourse,
+    '/courses/:id',validateRequest(updateCourseValidationSchema),CourseControllers.updateCourse
 );
 
 

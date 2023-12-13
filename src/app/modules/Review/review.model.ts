@@ -12,7 +12,6 @@ const TReviewSchema = new Schema<TReview>({
 
 
 
-
 const Review = model<TReview>("Review", TReviewSchema);
 
 export default Review;
