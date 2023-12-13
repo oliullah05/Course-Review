@@ -1,3 +1,4 @@
+import { query } from "express";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
 import { CourseServices } from "./course.service";
@@ -16,11 +17,17 @@ const createCourse = catchAsync(async (req, res) => {
 });
 
 const getAllCourses = catchAsync(async (req, res) => {
- const result = await CourseServices.getAllCoursesFromDB(req.query);
-
+  const result = await CourseServices.getAllCoursesFromDB(req.query);
+const metaData = CourseServices.metaData[1]
+   console.log(metaData,88);
   sendResponse(res, {
     statusCode: 200,
     success: true,
+    meta: {
+      page:metaData.page,
+      limit: metaData.limit,
+      total: result.length
+     },
     message: 'Courses are retrieved successfully',
     data: result,
   });
@@ -94,7 +101,7 @@ export const CourseControllers = {
   createCourse,
   getAllCourses,
   getSingleCourse,
-updateCourse,
-getSingleCourseWithReview,
-getBestCourseBasedOnAvarageReview
+  updateCourse,
+  getSingleCourseWithReview,
+  getBestCourseBasedOnAvarageReview
 };

@@ -6,7 +6,7 @@ import Review from "../Review/review.model";
 import { TCourse } from "./course.interface";
 import Course from "./course.model";
 
-
+let metaData:[unknown]= [{}];
 const createCourseIntoDB = async (payload: TCourse) => {
   const result = await Course.create(payload);
   if (result) {
@@ -15,9 +15,11 @@ const createCourseIntoDB = async (payload: TCourse) => {
   }
 };
 
+
+
+
 const getAllCoursesFromDB = async (query:Record<string,unknown>) => {
   
-const  result =await Course.find();
 
 
 //   if(!query){
@@ -45,16 +47,13 @@ const  result =await Course.find();
 
 
 
-
-
-
 let page = Number( query.page) || 1;
 let limit = Number( query.limit) || 10;
 
-// Calculate the skip value for pagination
+
 let skip = (page - 1) * limit;
 
-// Build the aggregation pipeline based on the query parameters
+
 let pipeline = [];
 
 // Sorting
@@ -68,13 +67,13 @@ if ( query.sortBy) {
 let matchQuery = {};
 
 if ( query.minPrice ||  query.maxPrice) {
-  // matchQuery.price = {};
+
   if ( query.minPrice) matchQuery.price.$gte = Number( query.minPrice);
   if ( query.maxPrice) matchQuery.price.$lte = Number( query.maxPrice);
 }
 
 if (query.startDate || query.endDate) {
-  // matchQuery.startDate = {};
+
   if (query.startDate) matchQuery.startDate = query.startDate;
   if (query.endDate) matchQuery.endDate = query.endDate;
 }
@@ -82,19 +81,15 @@ if (query.startDate || query.endDate) {
 
 
 if (query.language ) {
-  // matchQuery.language = {};
+
   if (query.language) matchQuery.language = query.language;
 }
+
+
 if (query.provider ) {
-  // matchQuery.provider = {};
+
   if (query.provider) matchQuery.provider = query.provider;
 }
-// if (query.durationInWeeks) {
-//   // matchQuery.durationInWeeks = {};
-//   if (query.durationInWeeks) matchQuery.durationInWeeks = query.durationInWeeks;
-// }
-
-
 
 
 
@@ -105,6 +100,8 @@ if ( query.tags) {
     }
 })
 }
+
+
 if ( query.level) {
   pipeline.push({
     $match: {
@@ -115,69 +112,44 @@ if ( query.level) {
 
 
 
-
-
-
-
-
-// Add other filtering conditions based on your schema fields
-
 if (Object.keys(matchQuery).length > 0) {
   pipeline.push({ $match: matchQuery });
 }
-// console.log(matchQuery);
-// Pagination
+
+
+//add virtual propery
 
 pipeline.push({ $addFields: { durationInWeeks: '$durationInWeeks' } });
 
 
 
-
-
-
-// pipeline.push({
-//   $match: {
-//     $expr: { $eq: ["$price", 59.99] }
-//   }
-// });
-
-// pipeline.push({
-//   $addFields: {
-//     show: true
-//   }
-// });
-
-
-
-
-
 pipeline.push({ $skip: skip }, { $limit: limit });
 
-// Execute the aggregation pipeline
-const rawResults = await Course.aggregate(pipeline);
 
-// Map the results and include virtuals
-const courses = rawResults.map(result => {
+const result = await Course.aggregate(pipeline);
+
+
+// to show virtuals
+let courses = result.map(result => {
   const course = new Course(result);
   return course.toObject({ virtuals: true });
 });
 
 
 
-
-
-
-
-
 if(query.durationInWeeks){
-  console.log(query.durationInWeeks,55);
-const durationInWeeksFilter =  courses.filter(lm=>lm?.durationInWeeks===Number(query.durationInWeeks))
-return durationInWeeksFilter;
+  courses =  courses.filter(lm=>lm?.durationInWeeks===Number(query.durationInWeeks))
 }
 
-else{
-  return courses
-}
+
+
+metaData.push({
+  page: page,
+  limit: limit
+})
+
+ return  courses
+
 
 
   
@@ -321,5 +293,6 @@ export const CourseServices = {
   getSingleCourseFromDB,
   updateCourseIntoDB,
   getSingleCourseWithReviewsFromDB,
-  getBestCourseBasedOnAvarageReviewsFromDB
+  getBestCourseBasedOnAvarageReviewsFromDB,
+  metaData
 };
