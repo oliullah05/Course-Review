@@ -79,7 +79,6 @@ const courseSchema = new Schema<TCourse>({
     },
 },{
     timestamps:true,
-    virtuals:true,
     toJSON:{
         virtuals:true
     },
@@ -89,20 +88,20 @@ const courseSchema = new Schema<TCourse>({
 });
 
 
-courseSchema.pre('save', async function (next) {
-    const isCategoryExist = await Course.findOne({
-        title: this.title, 
-    });
+// courseSchema.pre('save', async function (next) {
+//     const isCategoryExist = await Course.findOne({
+//         title: this.title, 
+//     });
   
-    if (isCategoryExist) {
-      throw new AppError(
-        404,
-        'Title is already exist!',
-      );
-    }
+//     if (isCategoryExist) {
+//       throw new AppError(
+//         404,
+//         'Title is already exist!',
+//       );
+//     }
   
-    next();
-  });
+//     next();
+//   });
 
 
 

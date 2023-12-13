@@ -14,20 +14,20 @@ const categorySchema = new Schema<TCategory>(
 });
 
 
-    categorySchema.pre('save', async function (next) {
-        const isCategoryExist = await Category.findOne({
-          name: this.name,
-        });
+    // categorySchema.pre('save', async function (next) {
+    //     const isCategoryExist = await Category.findOne({
+    //       name: this.name,
+    //     });
       
-        if (isCategoryExist) {
-          throw new AppError(
-            404,
-            'Category is already exist!',
-          );
-        }
+    //     if (isCategoryExist) {
+    //       throw new AppError(
+    //         404,
+    //         'Category is already exist!',
+    //       );
+    //     }
       
-        next();
-      });
+    //     next();
+    //   });
 
 
 export const Category = model<TCategory>(

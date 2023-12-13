@@ -28,10 +28,12 @@ const globalErrorHandler = (
     const simplifiedError = handleZodError(err)
     statusCode = simplifiedError.statusCode;
     message = simplifiedError.message;
+
     errorDetails= simplifiedError.errorDetails
     errorDetails.map((details: { message: string; })  => {
       errorMessage += `${details.message}. `
     })
+    errorDetails = {issues:errorDetails}
   }
 
 

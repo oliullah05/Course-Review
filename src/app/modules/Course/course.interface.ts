@@ -6,7 +6,7 @@ type TTag = {
   };
   
   type TCourseDetails = {
-    level:string; //  Beginner, Intermediate, Advanced
+    level:string; 
     description: string;
   };
   

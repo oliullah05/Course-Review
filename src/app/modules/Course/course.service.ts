@@ -10,7 +10,7 @@ let metaData:[unknown]= [{}];
 const createCourseIntoDB = async (payload: TCourse) => {
   const result = await Course.create(payload);
   if (result) {
-    const hideAverageRatingreviewCount = await Course.findById(result._id, { averageRating: 0, reviewCount: 0, ratingSum: 0})
+    const hideAverageRatingreviewCount = await Course.findById(result._id, { averageRating: 0, reviewCount: 0, ratingSum: 0,createdAt:0,__v:0,updatedAt:0,id:0})
     return hideAverageRatingreviewCount;
   }
 };
