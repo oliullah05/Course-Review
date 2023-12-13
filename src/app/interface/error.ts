@@ -7,5 +7,6 @@ export type TErrorSources = {
     statusCode:number,
     message:string,
     errorDetails:TErrorSources
+    
    
 }
