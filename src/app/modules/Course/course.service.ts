@@ -69,15 +69,14 @@ if ( query.sortBy) {
 // Filtering
 let matchQuery = {};
 
-if ( query.minPrice ) {
+if ( query.minPrice || query.maxPrice) {
   matchQuery.price = {};
   if ( query.minPrice) matchQuery.price.$gte = Number( query.minPrice);
+  if ( query.maxPrice) matchQuery.price.$lte = Number( query.maxPrice);
  
 }
 
-if(query.maxPrice){
-  if ( query.maxPrice) matchQuery.price.$lte = Number( query.maxPrice);
-}
+
 
 
 

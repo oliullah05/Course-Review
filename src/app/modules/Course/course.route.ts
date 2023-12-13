@@ -16,8 +16,6 @@ router.get(
     '/courses/:id',CourseControllers.getSingleCourse
 );
 
-
-
 router.get(
     '/courses/:id/reviews',CourseControllers.getSingleCourseWithReview
 );
@@ -26,7 +24,6 @@ router.get(
 router.get(
     '/course/best',CourseControllers.getBestCourseBasedOnAvarageReview
 );
-
 
 
 router.put(
