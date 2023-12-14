@@ -19,7 +19,7 @@ Make sure you have the following installed on your machine:
 1. **Clone the repository:**
 
    ```bash
-   git clone https://github.com/Porgramming-Hero-web-course/l2b2a3-course-review-marufbroh.git
+   git clone https://github.com/oliullah05/Course-Review.git
    ```
 
 2. **Install Dependencies:**
@@ -60,4 +60,4 @@ Make sure you have the following installed on your machine:
 
 **Regards**,
 
-Tamim Iqbal Maruf (marufbroh)
+Oliullah Bhuiyan
